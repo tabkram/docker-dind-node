@@ -7,14 +7,11 @@ ENV UPLIFT_VERSION $UPLIFT_VERSION
 # Install alpine packages
 RUN apk update
 RUN apk upgrade --available
-RUN apk add --no-cache aws-cli curl wget zip tar git openssl openssh-client jq bash tar gzip
+RUN apk add --no-cache aws-cli curl wget zip tar gzip git openssl jq bash
 RUN rm -rf /var/cache/apk/*
 
 # Test AWSCLI
 RUN aws --version
-
-# Install node deps
-RUN npm i -g pino pino-pretty
 
 # Install uplift
 COPY files/uplift.tar.gz /root/uplift.tar.gz
