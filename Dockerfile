@@ -13,10 +13,6 @@ RUN rm -rf /var/cache/apk/*
 # Test AWSCLI
 RUN aws --version
 
-# Install node tools
-RUN npm install --global yarn
-RUN yarn -v
-
 # Install node deps
 RUN npm i -g pino pino-pretty
 
