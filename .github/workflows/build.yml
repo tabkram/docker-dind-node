@@ -5,23 +5,36 @@ on:
     - main
 jobs:
   build:
+    strategy:
+      matrix:
+        include:
+          - node_version: 14
+            full_node_version: v14.21.0
+          - node_version: 16
+            full_node_version: v16.18.0
+          - node_version: 18
+            full_node_version: v18.12.0
+          - node_version: 20
+            full_node_version: v20.9.0
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-    - run: sh ./scripts/download.sh files/uplift.tar.gz https://github.com/gembaadvantage/uplift/releases/download/v2.21.0/uplift_2.21.0_linux-x86_64.tar.gz
+    - run: yarn install --frozen-lockfile
+    - run: sh ./scripts/download.sh files/node-linux-x64-musl.tar.gz https://unofficial-builds.nodejs.org/download/release/${{ matrix.full_node_version }}/node-${{ matrix.full_node_version }}-linux-x64-musl.tar.gz
     - name: Login to Docker Hub
       uses: docker/login-action@v2
       with:
         username: ${{ secrets.DOCKER_HUB_USERNAME }}
         password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
     - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v2
+      uses: docker/setup-buildx-action@v3
     - name: Build and push
-      uses: docker/build-push-action@v3
+      uses: docker/build-push-action@v5
       with:
         build-args: |
-          UPLIFT_VERSION=2.21.0
+          NODE_VERSION=${{ matrix.node_version }}
+          FULL_NODE_VERSION=${{ matrix.full_node_version }}
         context: .
         file: ./Dockerfile
         push: true
-        tags: ${{ secrets.DOCKER_HUB_USERNAME }}/nodejs-ci:16
+        tags: ${{ secrets.DOCKER_HUB_USERNAME }}/dind_node:${{ matrix.node_version }}

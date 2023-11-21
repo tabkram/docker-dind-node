@@ -1,8 +1,10 @@
 # Build final docker image now that all binaries are OK
-FROM node:16.20.0-alpine3.18 as base
+FROM docker:dind as base
 
-ARG UPLIFT_VERSION
-ENV UPLIFT_VERSION $UPLIFT_VERSION
+ARG NODE_VERSION
+ENV NODE_VERSION $NODE_VERSION
+ARG FULL_NODE_VERSION
+ENV FULL_NODE_VERSION $FULL_NODE_VERSION
 
 # Install alpine packages
 RUN apk update
@@ -13,15 +15,12 @@ RUN rm -rf /var/cache/apk/*
 # Test AWSCLI
 RUN aws --version
 
-# Install uplift
-COPY files/uplift.tar.gz /root/uplift.tar.gz
-RUN mkdir -p /root/uplift_temp
-RUN tar -xvzf /root/uplift.tar.gz -C /root/uplift_temp
-RUN rm /root/uplift.tar.gz
-RUN mv /root/uplift_temp/uplift /usr/local/bin/uplift
-RUN rm -Rf /root/uplift_temp
-RUN chmod +x /usr/local/bin/uplift
-RUN uplift version
+# Install nodejs for musl linux
+COPY files/node-linux-x64-musl.tar.gz /root/node-linux-x64-musl.tar.gz
+RUN tar -xvzf /root/node-linux-x64-musl.tar.gz -C /root
+RUN rm /root/node-linux-x64-musl.tar.gz
+ENV PATH="/root/node-${FULL_NODE_VERSION}-linux-x64-musl/bin:${PATH}"
+RUN echo "export PATH=$PATH" > /etc/environment
 
 # Entrypoint
 ENTRYPOINT ["/bin/bash", "-l", "-c"]
