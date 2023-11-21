@@ -16,6 +16,8 @@ jobs:
             full_node_version: v18.12.0
           - node_version: 20
             full_node_version: v20.9.0
+          - node_version: 20.9
+            full_node_version: v20.9.0
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
