@@ -22,6 +22,12 @@ RUN rm /root/node-linux-x64-musl.tar.gz
 ENV PATH="/root/node-${FULL_NODE_VERSION}-linux-x64-musl/bin:${PATH}"
 RUN echo "export PATH=$PATH" > /etc/environment
 
+# Install Yarn
+RUN npm install -g yarn
+
+# Display Node.js and Yarn versions for verification
+RUN node -v && yarn -v
+
 # Entrypoint
 ENTRYPOINT ["/bin/bash", "-l", "-c"]
 
