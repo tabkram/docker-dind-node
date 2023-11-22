@@ -30,7 +30,7 @@ RUN node -v && yarn -v
 
 # Entrypoint
 ENTRYPOINT ["/bin/bash", "-l", "-c"]
-CMD ["bash"]
+CMD ["/bin/sh"]
 
 # Test the image before building
 FROM base AS test
