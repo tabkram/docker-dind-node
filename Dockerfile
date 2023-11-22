@@ -19,11 +19,16 @@ RUN aws --version
 COPY files/node-linux-x64-musl.tar.gz /root/node-linux-x64-musl.tar.gz
 RUN tar -xvzf /root/node-linux-x64-musl.tar.gz -C /root
 RUN rm /root/node-linux-x64-musl.tar.gz
-ENV PATH="/root/node-${FULL_NODE_VERSION}-linux-x64-musl/bin:${PATH}"
-RUN echo "export PATH=$PATH" > /etc/environment
+
+RUN ln -s /root/node-${FULL_NODE_VERSION}-linux-x64-musl/bin/node /usr/local/bin/node
+RUN ln -s /root/node-${FULL_NODE_VERSION}-linux-x64-musl/bin/npm /usr/local/bin/npm
+RUN ln -s /root/node-${FULL_NODE_VERSION}-linux-x64-musl/bin/npx /usr/local/bin/npx
 
 # Install Yarn
 RUN npm install -g yarn
+
+RUN ln -s /root/node-${FULL_NODE_VERSION}-linux-x64-musl/bin/yarn /usr/local/bin/yarn
+RUN ln -s /root/node-${FULL_NODE_VERSION}-linux-x64-musl/bin/yarnpkg /usr/local/bin/yarnpkg
 
 # Display Node.js and Yarn versions for verification
 RUN node -v && yarn -v
