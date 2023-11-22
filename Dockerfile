@@ -6,6 +6,11 @@ ENV NODE_VERSION $NODE_VERSION
 ARG FULL_NODE_VERSION
 ENV FULL_NODE_VERSION $FULL_NODE_VERSION
 
+# Entrypoint file
+ENV DOCKER_DRIVER overlay
+COPY entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
 # Install alpine packages
 RUN apk update
 RUN apk upgrade --available
@@ -34,7 +39,7 @@ RUN ln -s /root/node-${FULL_NODE_VERSION}-linux-x64-musl/bin/yarnpkg /usr/local/
 RUN node -v && yarn -v
 
 # Entrypoint
-ENTRYPOINT ["/bin/bash", "-l", "-c"]
+ENTRYPOINT ["entrypoint.sh"]
 CMD ["/bin/sh"]
 
 # Test the image before building
