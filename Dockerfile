@@ -1,4 +1,4 @@
-# Build final docker image now that all binaries are OK
+# Use the official Docker image with Docker in Docker support
 FROM docker:dind as base
 
 ARG NODE_VERSION
@@ -6,10 +6,12 @@ ENV NODE_VERSION $NODE_VERSION
 ARG FULL_NODE_VERSION
 ENV FULL_NODE_VERSION $FULL_NODE_VERSION
 
-# Entrypoint file
-ENV DOCKER_DRIVER overlay
-COPY entrypoint.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/entrypoint.sh
+# Create a directory for Docker entrypoint scripts
+RUN mkdir -p /docker-entrypoint.d
+
+# Create a Docker entrypoint script
+COPY entrypoint.sh /docker-entrypoint.d/entrypoint.sh
+RUN chmod +x /docker-entrypoint.d/entrypoint.sh
 
 # Install alpine packages
 RUN apk update
@@ -38,9 +40,8 @@ RUN ln -s /root/node-${FULL_NODE_VERSION}-linux-x64-musl/bin/yarnpkg /usr/local/
 # Display Node.js and Yarn versions for verification
 RUN node -v && yarn -v
 
-# Entrypoint
-ENTRYPOINT ["entrypoint.sh"]
-CMD ["/bin/sh"]
+# Set the Docker entrypoint
+ENTRYPOINT ["/docker-entrypoint.d/entrypoint.sh"]
 
 # Test the image before building
 FROM base AS test
